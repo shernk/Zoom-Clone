@@ -15,6 +15,8 @@ app.set("view engine", "ejs");
 // javascript for the front-end in script.js file
 app.use(express.static("public"));
 
+app.use('/peerjs', peerServer);
+
 app.get("/", (req, res) => {
   res.redirect(`/${uuidv4()}`);
 });
@@ -24,11 +26,15 @@ app.get("/:room", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", (roomId, userId) => {
     socket.join(roomId);
     // user connected to zoom with specific user's id
-    socket.to(roomId).broadcast.emit("user-connected");
+    socket.to(roomId).broadcast.emit("user-connected", userId);
+    // send the message for unit room 
+    socket.on('message', message => {
+      io.to(roomId).emit('createMessage', message)
+    })
   });
 });
 
-server.listen(3000);
+server.listen(process.env.PORT || 3000);
