@@ -77,6 +77,10 @@
     overflow-y: auto;
 }
 
+.main__chat_window::-webkit-scrollbar {
+    display: none;
+}
+
 .messages{
     color: white;
     list-style: none;
